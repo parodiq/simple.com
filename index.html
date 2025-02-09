@@ -54,7 +54,7 @@
                     
                     engineDiv.innerHTML = `<h3>${engine.name}</h3>`;
                     images.forEach(img => {
-                        if (img.src.includes('http')) {
+                        if (img.src.includes('http') && (img.width > 500 || img.height > 500)) { // Ensure only high-res images
                             const imageElement = document.createElement('img');
                             imageElement.src = img.src;
                             imageElement.alt = query;
