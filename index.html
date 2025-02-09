@@ -23,7 +23,7 @@
             { name: 'Google', url: 'https://www.google.com/search?q=' },
             { name: 'Bing', url: 'https://www.bing.com/search?q=' },
             { name: 'Yahoo', url: 'https://search.yahoo.com/search?p=' },
-            { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
+            { name: 'DuckDuckGo', url: 'https://duckduckgo.com/html?q=' },
             { name: 'Startpage', url: 'https://www.startpage.com/do/dsearch?query=' },
             { name: 'Ecosia', url: 'https://www.ecosia.org/search?q=' },
             { name: 'Brave', url: 'https://search.brave.com/search?q=' },
@@ -32,23 +32,39 @@
             { name: 'Qwant', url: 'https://www.qwant.com/?q=' }
         ];
 
-        document.getElementById('searchForm').addEventListener('submit', function(event) {
+        document.getElementById('searchForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             const query = document.getElementById('query').value;
             const resultsContainer = document.getElementById('results');
             resultsContainer.innerHTML = '';
 
-            searchEngines.forEach(engine => {
-                const iframe = document.createElement('iframe');
-                iframe.src = engine.url + encodeURIComponent(query);
-                iframe.width = '100%';
-                iframe.height = '300';
-                iframe.style.border = 'none';
+            searchEngines.forEach(async engine => {
                 const engineDiv = document.createElement('div');
                 engineDiv.classList.add('engine-results');
-                engineDiv.innerHTML = `<h3>${engine.name}</h3>`;
-                engineDiv.appendChild(iframe);
+                engineDiv.innerHTML = `<h3>${engine.name}</h3><p>Loading...</p>`;
                 resultsContainer.appendChild(engineDiv);
+
+                try {
+                    const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(engine.url + query)}`);
+                    const data = await response.json();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data.contents, 'text/html');
+                    const links = doc.querySelectorAll('a');
+                    
+                    engineDiv.innerHTML = `<h3>${engine.name}</h3>`;
+                    links.forEach(link => {
+                        if (link.href.includes('http')) {
+                            const resultLink = document.createElement('a');
+                            resultLink.href = link.href;
+                            resultLink.textContent = link.textContent || link.href;
+                            resultLink.target = '_blank';
+                            engineDiv.appendChild(resultLink);
+                            engineDiv.appendChild(document.createElement('br'));
+                        }
+                    });
+                } catch (error) {
+                    engineDiv.innerHTML = `<h3>${engine.name}</h3><p>Error loading results</p>`;
+                }
             });
         });
     </script>
