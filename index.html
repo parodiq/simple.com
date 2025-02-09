@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Search Engine</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .results { display: flex; flex-wrap: wrap; gap: 10px; }
+        .engine-results { width: 30%; border: 1px solid #ccc; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Search Across 10 Engines</h2>
+    <form id="searchForm">
+        <input type="text" id="query" placeholder="Enter search term" required>
+        <button type="submit">Search</button>
+    </form>
+    <div id="results" class="results"></div>
+
+    <script>
+        const searchEngines = [
+            { name: 'Google', url: 'https://www.google.com/search?q=' },
+            { name: 'Bing', url: 'https://www.bing.com/search?q=' },
+            { name: 'Yahoo', url: 'https://search.yahoo.com/search?p=' },
+            { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
+            { name: 'Startpage', url: 'https://www.startpage.com/do/dsearch?query=' },
+            { name: 'Ecosia', url: 'https://www.ecosia.org/search?q=' },
+            { name: 'Brave', url: 'https://search.brave.com/search?q=' },
+            { name: 'Mojeek', url: 'https://www.mojeek.com/search?q=' },
+            { name: 'Yandex', url: 'https://yandex.com/search/?text=' },
+            { name: 'Qwant', url: 'https://www.qwant.com/?q=' }
+        ];
+
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const query = document.getElementById('query').value;
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            searchEngines.forEach(engine => {
+                const iframe = document.createElement('iframe');
+                iframe.src = engine.url + encodeURIComponent(query);
+                iframe.width = '100%';
+                iframe.height = '300';
+                iframe.style.border = 'none';
+                const engineDiv = document.createElement('div');
+                engineDiv.classList.add('engine-results');
+                engineDiv.innerHTML = `<h3>${engine.name}</h3>`;
+                engineDiv.appendChild(iframe);
+                resultsContainer.appendChild(engineDiv);
+            });
+        });
+    </script>
+</body>
+</html>
