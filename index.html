@@ -3,33 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Search Engine</title>
+    <title>Multi-Image Search Engine</title>
     <style>
         body { font-family: Arial, sans-serif; }
         .results { display: flex; flex-wrap: wrap; gap: 10px; }
         .engine-results { width: 30%; border: 1px solid #ccc; padding: 10px; }
+        img { max-width: 100%; height: auto; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
-    <h2>Search Across 10 Engines</h2>
+    <h2>Search Images Across 10 Engines</h2>
     <form id="searchForm">
-        <input type="text" id="query" placeholder="Enter search term" required>
+        <input type="text" id="query" placeholder="Enter image search term" required>
         <button type="submit">Search</button>
     </form>
     <div id="results" class="results"></div>
 
     <script>
         const searchEngines = [
-            { name: 'Google', url: 'https://www.google.com/search?q=' },
-            { name: 'Bing', url: 'https://www.bing.com/search?q=' },
-            { name: 'Yahoo', url: 'https://search.yahoo.com/search?p=' },
-            { name: 'DuckDuckGo', url: 'https://duckduckgo.com/html?q=' },
-            { name: 'Startpage', url: 'https://www.startpage.com/do/dsearch?query=' },
-            { name: 'Ecosia', url: 'https://www.ecosia.org/search?q=' },
-            { name: 'Brave', url: 'https://search.brave.com/search?q=' },
-            { name: 'Mojeek', url: 'https://www.mojeek.com/search?q=' },
-            { name: 'Yandex', url: 'https://yandex.com/search/?text=' },
-            { name: 'Qwant', url: 'https://www.qwant.com/?q=' }
+            { name: 'Google Images', url: 'https://www.google.com/search?tbm=isch&q=' },
+            { name: 'Bing Images', url: 'https://www.bing.com/images/search?q=' },
+            { name: 'Yahoo Images', url: 'https://images.search.yahoo.com/search/images?p=' },
+            { name: 'DuckDuckGo Images', url: 'https://duckduckgo.com/?q=&iax=images&ia=images' },
+            { name: 'Startpage Images', url: 'https://www.startpage.com/do/dsearch?query=&cat=images' },
+            { name: 'Ecosia Images', url: 'https://www.ecosia.org/images?q=' },
+            { name: 'Brave Images', url: 'https://search.brave.com/images?q=' },
+            { name: 'Mojeek Images', url: 'https://www.mojeek.com/search?q=&fmt=img' },
+            { name: 'Yandex Images', url: 'https://yandex.com/images/search?text=' },
+            { name: 'Qwant Images', url: 'https://www.qwant.com/?q=&t=images' }
         ];
 
         document.getElementById('searchForm').addEventListener('submit', async function(event) {
@@ -49,17 +50,15 @@
                     const data = await response.json();
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(data.contents, 'text/html');
-                    const links = doc.querySelectorAll('a');
+                    const images = doc.querySelectorAll('img');
                     
                     engineDiv.innerHTML = `<h3>${engine.name}</h3>`;
-                    links.forEach(link => {
-                        if (link.href.includes('http')) {
-                            const resultLink = document.createElement('a');
-                            resultLink.href = link.href;
-                            resultLink.textContent = link.textContent || link.href;
-                            resultLink.target = '_blank';
-                            engineDiv.appendChild(resultLink);
-                            engineDiv.appendChild(document.createElement('br'));
+                    images.forEach(img => {
+                        if (img.src.includes('http')) {
+                            const imageElement = document.createElement('img');
+                            imageElement.src = img.src;
+                            imageElement.alt = query;
+                            engineDiv.appendChild(imageElement);
                         }
                     });
                 } catch (error) {
